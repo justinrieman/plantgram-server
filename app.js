@@ -1,11 +1,18 @@
 const express = require('express');
+const app = express();
 const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 require('dotenv').config();
 
-const app = express();
+mongoose.connect(
+  'mongodb+srv://justin:' +
+    process.env.MONGO_PW +
+    '@cluster0-ar4wa.mongodb.net/test?retryWrites=true&w=majority',
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
 
 const postsRoute = require('./api/routes/posts');
 const usersRoute = require('./api/routes/users');
@@ -35,5 +42,4 @@ app.use((error, req, res, next) => {
 
 app.listen(port, () => {
   console.log('listening on port ' + port);
-  console.log(process.env.SECRET);
 });

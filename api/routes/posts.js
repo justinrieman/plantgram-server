@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+
+const Post = require('../models/post');
 
 // Get all posts
 router.get('/', (req, res, next) => {
@@ -14,15 +17,33 @@ router.get('/:postId', (req, res, next) => {
 
 //Make one post
 router.post('/', (req, res, next) => {
-  const newPost = {
+  const newPost = new Post({
+    _id: new mongoose.Types.ObjectId(),
     body: req.body.body,
     user: req.body.user,
     createdAt: new Date().toISOString(),
     likeCount: 0,
     commentCount: 0,
-  };
+  });
 
-  res.status(200).json(newPost);
+  newPost
+    .save()
+    .then((result) => {
+      res.status(200).json({
+        message: 'Post created successfully!',
+        post: {
+          _id: result._id,
+          body: result.body,
+          user: result.user,
+          createdAt: result.createdAt,
+          likeCount: result.likeCount,
+          commentCount: result.commentCount,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+    });
 });
 
 // Comment on a post
